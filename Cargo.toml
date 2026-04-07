@@ -1,0 +1,15 @@
+[package]
+name = "tokio-multi-lock"
+version = "0.1.0-1"
+edition = "2024"
+description = "Deadlock-safe concurrent lock acquisition"
+license = "LGPL-3.0-or-later"
+
+[dependencies]
+tokio = { version = "1", features = ["sync"] }
+
+[profile.dev]
+opt-level = 3
+
+[profile.release]
+opt-level = 3
