@@ -1,6 +1,10 @@
-use std::{future::Future, pin::Pin, ptr};
+use std::{future::Future, pin::Pin, ptr, time::Duration};
 
 use tokio::sync::{Mutex, MutexGuard};
+use tokio::time::Sleep;
+
+const INITIAL_TIMEOUT: Duration = Duration::from_micros(100);
+const MAX_TIMEOUT: Duration = Duration::from_millis(100);
 
 macro_rules! impl_multi_lock {
     ($name:ident, $n:expr => $([$idx:tt, $letter:ident, $lt:lifetime]),+ $(,)?) => {
@@ -15,6 +19,9 @@ macro_rules! impl_multi_lock {
                 $(
                     [<fut_ $letter:lower>]: Option<Pin<Box<dyn Future<Output = MutexGuard<$lt, $letter>> + Send + $lt>>>,
                 )+
+                timeout: Duration,
+                timeout_fut: Option<Pin<Box<Sleep>>>,
+                backoff_fut: Option<Pin<Box<Sleep>>>,
             }
 
             impl<$($lt,)+ $($letter,)+> $name<$($lt,)+ $($letter,)+>
@@ -26,6 +33,9 @@ macro_rules! impl_multi_lock {
                     Self {
                         $([<mutex_ $letter:lower>]: [<$letter:lower>],)+
                         $([<fut_ $letter:lower>]: None,)+
+                        timeout: INITIAL_TIMEOUT,
+                        timeout_fut: None,
+                        backoff_fut: None,
                     }
                 }
 
@@ -62,8 +72,17 @@ macro_rules! impl_multi_lock {
                 ) -> std::task::Poll<Self::Output> {
                     use std::task::Poll::{Pending, Ready};
 
+                    // If in backoff, wait for it to complete before retrying
+                    if let Some(ref mut backoff) = self.backoff_fut {
+                        if backoff.as_mut().poll(cx).is_pending() {
+                            return Pending;
+                        }
+                        self.backoff_fut = None;
+                    }
+
                     let order = self.compute_order();
 
+                    // Take or create lock futures
                     $(
                         let mut [<fut_ $letter:lower>]: Option<Pin<Box<dyn Future<Output = MutexGuard<$lt, $letter>> + Send + $lt>>> =
                             Some(self.[<fut_ $letter:lower>].take().unwrap_or_else(|| {
@@ -71,14 +90,17 @@ macro_rules! impl_multi_lock {
                             }));
                     )+
 
+                    // Storage for acquired guards
                     $(
                         let mut [<guard_ $letter:lower>]: Option<MutexGuard<$lt, $letter>> = None;
                     )+
 
-                    let mut ready_bits: u32 = 0;
+                    // Poll lock futures strictly in sorted order
+                    // Only poll lock N if locks 0..N are already held
+                    let mut ready_count: usize = 0;
 
-                    for (pos, &idx) in order.iter().enumerate() {
-                        match idx {
+                    for &idx in order.iter() {
+                        let acquired = match idx {
                             $(
                                 $idx => {
                                     let fut = [<fut_ $letter:lower>].as_mut().unwrap();
@@ -86,37 +108,70 @@ macro_rules! impl_multi_lock {
                                     if let Ready(guard) = fut.as_mut().poll(cx) {
                                         [<guard_ $letter:lower>] = Some(guard);
                                         [<fut_ $letter:lower>] = None;
-                                        ready_bits |= 1 << pos;
+                                        true
+                                    } else {
+                                        false
                                     }
                                 }
                             )+
                             _ => unreachable!(),
+                        };
+
+                        if acquired {
+                            ready_count += 1;
+                        } else {
+                            break; // Stop at first Pending - strict ordering
                         }
                     }
 
-                    let prefix_len = ready_bits.trailing_ones() as usize;
-
-                    if prefix_len == $n {
+                    // All locks acquired - return immediately
+                    if ready_count == $n {
                         return Ready(($([<guard_ $letter:lower>].unwrap(),)+));
                     }
 
-                    for (pos, &idx) in order.iter().enumerate() {
-                        match idx {
-                            $(
-                                $idx => {
-                                    if pos < prefix_len {
-                                        let guard = [<guard_ $letter:lower>].take().unwrap();
-                                        self.[<fut_ $letter:lower>] = Some(Box::pin(async move { guard }));
-                                    } else if [<fut_ $letter:lower>].is_none() {
-                                        drop([<guard_ $letter:lower>].take());
-                                    } else {
-                                        self.[<fut_ $letter:lower>] = [<fut_ $letter:lower>].take();
-                                    }
-                                }
-                            )+
-                            _ => unreachable!(),
-                        }
+                    // If we have at least one guard, ensure timer is running
+                    if ready_count > 0 && self.timeout_fut.is_none() {
+                        self.timeout_fut = Some(Box::pin(tokio::time::sleep(self.timeout)));
                     }
+
+                    // Poll the timeout if active
+                    let timed_out = if let Some(ref mut timeout_fut) = self.timeout_fut {
+                        timeout_fut.as_mut().poll(cx).is_ready()
+                    } else {
+                        false
+                    };
+
+                    if timed_out {
+                        // Timeout fired - drop all guards, start backoff sleep
+                        $(
+                            drop([<guard_ $letter:lower>].take());
+                        )+
+
+                        self.timeout_fut = None;
+                        let backoff = self.timeout;
+                        self.timeout = (self.timeout * 2).min(MAX_TIMEOUT);
+
+                        // Sleep before retrying to let other tasks proceed
+                        let mut backoff_sleep = Box::pin(tokio::time::sleep(backoff));
+                        if backoff_sleep.as_mut().poll(cx).is_pending() {
+                            self.backoff_fut = Some(backoff_sleep);
+                            return Pending;
+                        }
+                        // Backoff completed immediately - wake to retry now
+                        cx.waker().wake_by_ref();
+                        return Pending;
+                    }
+
+                    // Store state for next poll
+                    $(
+                        if let Some(guard) = [<guard_ $letter:lower>].take() {
+                            // Keep acquired guard as a ready future
+                            self.[<fut_ $letter:lower>] = Some(Box::pin(async move { guard }));
+                        } else if let Some(fut) = [<fut_ $letter:lower>].take() {
+                            // Keep pending future
+                            self.[<fut_ $letter:lower>] = Some(fut);
+                        }
+                    )+
 
                     Pending
                 }
