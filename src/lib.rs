@@ -19,6 +19,7 @@ macro_rules! impl_multi_lock {
                 $(
                     [<fut_ $letter:lower>]: Option<Pin<Box<dyn Future<Output = MutexGuard<$lt, $letter>> + Send + $lt>>>,
                 )+
+                order: [usize; $n],
                 timeout: Duration,
                 timeout_fut: Option<Pin<Box<Sleep>>>,
                 backoff_fut: Option<Pin<Box<Sleep>>>,
@@ -30,17 +31,7 @@ macro_rules! impl_multi_lock {
             {
                 #[allow(clippy::too_many_arguments)]
                 pub fn new($([<$letter:lower>]: &$lt Mutex<$letter>,)+) -> Self {
-                    Self {
-                        $([<mutex_ $letter:lower>]: [<$letter:lower>],)+
-                        $([<fut_ $letter:lower>]: None,)+
-                        timeout: INITIAL_TIMEOUT,
-                        timeout_fut: None,
-                        backoff_fut: None,
-                    }
-                }
-
-                fn compute_order(&self) -> [usize; $n] {
-                    let mut addrs = [$(($idx, ptr::from_ref(self.[<mutex_ $letter:lower>]) as usize),)+];
+                    let mut addrs = [$(($idx, ptr::from_ref([<$letter:lower>]) as usize),)+];
                     addrs.sort_by_key(|&(_, addr)| addr);
 
                     let mut prev = 0usize;
@@ -56,7 +47,14 @@ macro_rules! impl_multi_lock {
                         order[i] = idx;
                     }
 
-                    order
+                    Self {
+                        $([<mutex_ $letter:lower>]: [<$letter:lower>],)+
+                        $([<fut_ $letter:lower>]: None,)+
+                        order,
+                        timeout: INITIAL_TIMEOUT,
+                        timeout_fut: None,
+                        backoff_fut: None,
+                    }
                 }
             }
 
@@ -80,7 +78,7 @@ macro_rules! impl_multi_lock {
                         self.backoff_fut = None;
                     }
 
-                    let order = self.compute_order();
+                    let order = self.order;
 
                     // Take or create lock futures
                     $(
