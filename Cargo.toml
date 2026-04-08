@@ -1,6 +1,6 @@
 [package]
 name = "tokio-multi-lock"
-version = "0.1.0-1"
+version = "0.1.0-2"
 edition = "2024"
 description = "Deadlock-safe concurrent lock acquisition"
 readme = "README.md"
@@ -14,7 +14,12 @@ paste = "1"
 tokio = { version = "1", default-features = false, features = ["sync", "time"] }
 
 [dev-dependencies]
-tokio = { version = "1", default-features = false, features = ["macros", "rt", "sync", "time"] }
+tokio = { version = "1", default-features = false, features = [
+  "macros",
+  "rt",
+  "sync",
+  "time"
+] }
 
 [lints.clippy]
 cargo = { level = "warn", priority = -1 }
