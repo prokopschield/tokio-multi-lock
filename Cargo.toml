@@ -4,7 +4,10 @@ version = "0.1.0-1"
 edition = "2024"
 description = "Deadlock-safe concurrent lock acquisition"
 readme = "README.md"
+repository = "https://github.com/prokopschield/tokio-multi-lock"
 license = "LGPL-3.0-or-later"
+keywords = ["async", "concurrency", "deadlock", "mutex", "tokio"]
+categories = ["asynchronous", "concurrency"]
 
 [dependencies]
 paste = "1"
