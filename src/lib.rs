@@ -19,6 +19,9 @@ macro_rules! impl_multi_lock {
                 $(
                     [<fut_ $letter:lower>]: Option<Pin<Box<dyn Future<Output = MutexGuard<$lt, $letter>> + Send + $lt>>>,
                 )+
+                $(
+                    [<guard_ $letter:lower>]: Option<MutexGuard<$lt, $letter>>,
+                )+
                 order: [usize; $n],
                 timeout: Duration,
                 timeout_fut: Option<Pin<Box<Sleep>>>,
@@ -50,6 +53,7 @@ macro_rules! impl_multi_lock {
                     Self {
                         $([<mutex_ $letter:lower>]: [<$letter:lower>],)+
                         $([<fut_ $letter:lower>]: None,)+
+                        $([<guard_ $letter:lower>]: None,)+
                         order,
                         timeout: INITIAL_TIMEOUT,
                         timeout_fut: None,
@@ -80,19 +84,6 @@ macro_rules! impl_multi_lock {
 
                     let order = self.order;
 
-                    // Take or create lock futures
-                    $(
-                        let mut [<fut_ $letter:lower>]: Option<Pin<Box<dyn Future<Output = MutexGuard<$lt, $letter>> + Send + $lt>>> =
-                            Some(self.[<fut_ $letter:lower>].take().unwrap_or_else(|| {
-                                Box::pin(self.[<mutex_ $letter:lower>].lock())
-                            }));
-                    )+
-
-                    // Storage for acquired guards
-                    $(
-                        let mut [<guard_ $letter:lower>]: Option<MutexGuard<$lt, $letter>> = None;
-                    )+
-
                     // Poll lock futures strictly in sorted order
                     // Only poll lock N if locks 0..N are already held
                     let mut ready_count: usize = 0;
@@ -101,14 +92,24 @@ macro_rules! impl_multi_lock {
                         let acquired = match idx {
                             $(
                                 $idx => {
-                                    let fut = [<fut_ $letter:lower>].as_mut().unwrap();
-
-                                    if let Ready(guard) = fut.as_mut().poll(cx) {
-                                        [<guard_ $letter:lower>] = Some(guard);
-                                        [<fut_ $letter:lower>] = None;
+                                    // Already have this guard from a previous poll
+                                    if self.[<guard_ $letter:lower>].is_some() {
                                         true
                                     } else {
-                                        false
+                                        // Create future if needed
+                                        if self.[<fut_ $letter:lower>].is_none() {
+                                            self.[<fut_ $letter:lower>] = Some(Box::pin(self.[<mutex_ $letter:lower>].lock()));
+                                        }
+
+                                        let fut = self.[<fut_ $letter:lower>].as_mut().unwrap();
+
+                                        if let Ready(guard) = fut.as_mut().poll(cx) {
+                                            self.[<guard_ $letter:lower>] = Some(guard);
+                                            self.[<fut_ $letter:lower>] = None;
+                                            true
+                                        } else {
+                                            false
+                                        }
                                     }
                                 }
                             )+
@@ -124,7 +125,7 @@ macro_rules! impl_multi_lock {
 
                     // All locks acquired - return immediately
                     if ready_count == $n {
-                        return Ready(($([<guard_ $letter:lower>].unwrap(),)+));
+                        return Ready(($(self.[<guard_ $letter:lower>].take().unwrap(),)+));
                     }
 
                     // If we have at least one guard, ensure timer is running
@@ -140,9 +141,10 @@ macro_rules! impl_multi_lock {
                     };
 
                     if timed_out {
-                        // Timeout fired - drop all guards, start backoff sleep
+                        // Timeout fired - drop all guards and futures, start backoff sleep
                         $(
-                            drop([<guard_ $letter:lower>].take());
+                            self.[<guard_ $letter:lower>] = None;
+                            self.[<fut_ $letter:lower>] = None;
                         )+
 
                         self.timeout_fut = None;
@@ -155,21 +157,11 @@ macro_rules! impl_multi_lock {
                             self.backoff_fut = Some(backoff_sleep);
                             return Pending;
                         }
+
                         // Backoff completed immediately - wake to retry now
                         cx.waker().wake_by_ref();
                         return Pending;
                     }
-
-                    // Store state for next poll
-                    $(
-                        if let Some(guard) = [<guard_ $letter:lower>].take() {
-                            // Keep acquired guard as a ready future
-                            self.[<fut_ $letter:lower>] = Some(Box::pin(async move { guard }));
-                        } else if let Some(fut) = [<fut_ $letter:lower>].take() {
-                            // Keep pending future
-                            self.[<fut_ $letter:lower>] = Some(fut);
-                        }
-                    )+
 
                     Pending
                 }
