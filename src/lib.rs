@@ -393,4 +393,84 @@ macro_rules! multilock {
         )
         .await
     };
+
+    // Trailing comma variants
+    ($a:expr,) => {
+        $crate::multilock!($a)
+    };
+    ($a:expr, $b:expr,) => {
+        $crate::multilock!($a, $b)
+    };
+    ($a:expr, $b:expr, $c:expr,) => {
+        $crate::multilock!($a, $b, $c)
+    };
+    ($a:expr, $b:expr, $c:expr, $d:expr,) => {
+        $crate::multilock!($a, $b, $c, $d)
+    };
+    ($a:expr, $b:expr, $c:expr, $d:expr, $e:expr,) => {
+        $crate::multilock!($a, $b, $c, $d, $e)
+    };
+    ($a:expr, $b:expr, $c:expr, $d:expr, $e:expr, $f:expr,) => {
+        $crate::multilock!($a, $b, $c, $d, $e, $f)
+    };
+    ($a:expr, $b:expr, $c:expr, $d:expr, $e:expr, $f:expr, $g:expr,) => {
+        $crate::multilock!($a, $b, $c, $d, $e, $f, $g)
+    };
+    ($a:expr, $b:expr, $c:expr, $d:expr, $e:expr, $f:expr, $g:expr, $h:expr,) => {
+        $crate::multilock!($a, $b, $c, $d, $e, $f, $g, $h)
+    };
+    ($a:expr, $b:expr, $c:expr, $d:expr, $e:expr, $f:expr, $g:expr, $h:expr, $i:expr,) => {
+        $crate::multilock!($a, $b, $c, $d, $e, $f, $g, $h, $i)
+    };
+    ($a:expr, $b:expr, $c:expr, $d:expr, $e:expr, $f:expr, $g:expr, $h:expr, $i:expr, $j:expr,) => {
+        $crate::multilock!($a, $b, $c, $d, $e, $f, $g, $h, $i, $j)
+    };
+    ($a:expr, $b:expr, $c:expr, $d:expr, $e:expr, $f:expr, $g:expr, $h:expr, $i:expr, $j:expr, $k:expr,) => {
+        $crate::multilock!($a, $b, $c, $d, $e, $f, $g, $h, $i, $j, $k)
+    };
+    ($a:expr, $b:expr, $c:expr, $d:expr, $e:expr, $f:expr, $g:expr, $h:expr, $i:expr, $j:expr, $k:expr, $l:expr,) => {
+        $crate::multilock!($a, $b, $c, $d, $e, $f, $g, $h, $i, $j, $k, $l)
+    };
+    ($a:expr, $b:expr, $c:expr, $d:expr, $e:expr, $f:expr, $g:expr, $h:expr, $i:expr, $j:expr, $k:expr, $l:expr, $m:expr,) => {
+        $crate::multilock!($a, $b, $c, $d, $e, $f, $g, $h, $i, $j, $k, $l, $m)
+    };
+    ($a:expr, $b:expr, $c:expr, $d:expr, $e:expr, $f:expr, $g:expr, $h:expr, $i:expr, $j:expr, $k:expr, $l:expr, $m:expr, $n:expr,) => {
+        $crate::multilock!($a, $b, $c, $d, $e, $f, $g, $h, $i, $j, $k, $l, $m, $n)
+    };
+    ($a:expr, $b:expr, $c:expr, $d:expr, $e:expr, $f:expr, $g:expr, $h:expr, $i:expr, $j:expr, $k:expr, $l:expr, $m:expr, $n:expr, $o:expr,) => {
+        $crate::multilock!($a, $b, $c, $d, $e, $f, $g, $h, $i, $j, $k, $l, $m, $n, $o)
+    };
+    ($a:expr, $b:expr, $c:expr, $d:expr, $e:expr, $f:expr, $g:expr, $h:expr, $i:expr, $j:expr, $k:expr, $l:expr, $m:expr, $n:expr, $o:expr, $p:expr,) => {
+        $crate::multilock!($a, $b, $c, $d, $e, $f, $g, $h, $i, $j, $k, $l, $m, $n, $o, $p)
+    };
+    ($a:expr, $b:expr, $c:expr, $d:expr, $e:expr, $f:expr, $g:expr, $h:expr, $i:expr, $j:expr, $k:expr, $l:expr, $m:expr, $n:expr, $o:expr, $p:expr, $q:expr,) => {
+        $crate::multilock!($a, $b, $c, $d, $e, $f, $g, $h, $i, $j, $k, $l, $m, $n, $o, $p, $q)
+    };
+    ($a:expr, $b:expr, $c:expr, $d:expr, $e:expr, $f:expr, $g:expr, $h:expr, $i:expr, $j:expr, $k:expr, $l:expr, $m:expr, $n:expr, $o:expr, $p:expr, $q:expr, $r:expr,) => {
+        $crate::multilock!($a, $b, $c, $d, $e, $f, $g, $h, $i, $j, $k, $l, $m, $n, $o, $p, $q, $r)
+    };
+    ($a:expr, $b:expr, $c:expr, $d:expr, $e:expr, $f:expr, $g:expr, $h:expr, $i:expr, $j:expr, $k:expr, $l:expr, $m:expr, $n:expr, $o:expr, $p:expr, $q:expr, $r:expr, $s:expr,) => {
+        $crate::multilock!($a, $b, $c, $d, $e, $f, $g, $h, $i, $j, $k, $l, $m, $n, $o, $p, $q, $r, $s)
+    };
+    ($a:expr, $b:expr, $c:expr, $d:expr, $e:expr, $f:expr, $g:expr, $h:expr, $i:expr, $j:expr, $k:expr, $l:expr, $m:expr, $n:expr, $o:expr, $p:expr, $q:expr, $r:expr, $s:expr, $t:expr,) => {
+        $crate::multilock!($a, $b, $c, $d, $e, $f, $g, $h, $i, $j, $k, $l, $m, $n, $o, $p, $q, $r, $s, $t)
+    };
+    ($a:expr, $b:expr, $c:expr, $d:expr, $e:expr, $f:expr, $g:expr, $h:expr, $i:expr, $j:expr, $k:expr, $l:expr, $m:expr, $n:expr, $o:expr, $p:expr, $q:expr, $r:expr, $s:expr, $t:expr, $u:expr,) => {
+        $crate::multilock!($a, $b, $c, $d, $e, $f, $g, $h, $i, $j, $k, $l, $m, $n, $o, $p, $q, $r, $s, $t, $u)
+    };
+    ($a:expr, $b:expr, $c:expr, $d:expr, $e:expr, $f:expr, $g:expr, $h:expr, $i:expr, $j:expr, $k:expr, $l:expr, $m:expr, $n:expr, $o:expr, $p:expr, $q:expr, $r:expr, $s:expr, $t:expr, $u:expr, $v:expr,) => {
+        $crate::multilock!($a, $b, $c, $d, $e, $f, $g, $h, $i, $j, $k, $l, $m, $n, $o, $p, $q, $r, $s, $t, $u, $v)
+    };
+    ($a:expr, $b:expr, $c:expr, $d:expr, $e:expr, $f:expr, $g:expr, $h:expr, $i:expr, $j:expr, $k:expr, $l:expr, $m:expr, $n:expr, $o:expr, $p:expr, $q:expr, $r:expr, $s:expr, $t:expr, $u:expr, $v:expr, $w:expr,) => {
+        $crate::multilock!($a, $b, $c, $d, $e, $f, $g, $h, $i, $j, $k, $l, $m, $n, $o, $p, $q, $r, $s, $t, $u, $v, $w)
+    };
+    ($a:expr, $b:expr, $c:expr, $d:expr, $e:expr, $f:expr, $g:expr, $h:expr, $i:expr, $j:expr, $k:expr, $l:expr, $m:expr, $n:expr, $o:expr, $p:expr, $q:expr, $r:expr, $s:expr, $t:expr, $u:expr, $v:expr, $w:expr, $x:expr,) => {
+        $crate::multilock!($a, $b, $c, $d, $e, $f, $g, $h, $i, $j, $k, $l, $m, $n, $o, $p, $q, $r, $s, $t, $u, $v, $w, $x)
+    };
+    ($a:expr, $b:expr, $c:expr, $d:expr, $e:expr, $f:expr, $g:expr, $h:expr, $i:expr, $j:expr, $k:expr, $l:expr, $m:expr, $n:expr, $o:expr, $p:expr, $q:expr, $r:expr, $s:expr, $t:expr, $u:expr, $v:expr, $w:expr, $x:expr, $y:expr,) => {
+        $crate::multilock!($a, $b, $c, $d, $e, $f, $g, $h, $i, $j, $k, $l, $m, $n, $o, $p, $q, $r, $s, $t, $u, $v, $w, $x, $y)
+    };
+    ($a:expr, $b:expr, $c:expr, $d:expr, $e:expr, $f:expr, $g:expr, $h:expr, $i:expr, $j:expr, $k:expr, $l:expr, $m:expr, $n:expr, $o:expr, $p:expr, $q:expr, $r:expr, $s:expr, $t:expr, $u:expr, $v:expr, $w:expr, $x:expr, $y:expr, $z:expr,) => {
+        $crate::multilock!($a, $b, $c, $d, $e, $f, $g, $h, $i, $j, $k, $l, $m, $n, $o, $p, $q, $r, $s, $t, $u, $v, $w, $x, $y, $z)
+    };
 }
