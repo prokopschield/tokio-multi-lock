@@ -1,3 +1,5 @@
+//! Deadlock prevention and resistance tests.
+
 #![allow(
     clippy::cast_possible_truncation,
     clippy::expect_used,
