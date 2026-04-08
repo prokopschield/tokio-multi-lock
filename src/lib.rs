@@ -1,3 +1,43 @@
+//! Deadlock-safe concurrent acquisition of multiple Tokio mutexes.
+//!
+//! When acquiring multiple locks, inconsistent ordering across tasks causes deadlock.
+//! This crate provides [`MultiLock2`] through [`MultiLock26`] for acquiring 2-26
+//! mutexes atomically without deadlock.
+//!
+//! # Algorithm
+//!
+//! Locks are acquired in a consistent order determined by memory address. This
+//! prevents deadlock among `MultiLock` users. To handle external code that acquires
+//! locks in arbitrary order, a timeout-based backoff mechanism releases all held
+//! locks and retries after a delay (100μs initial, doubling to 100ms max).
+//!
+//! # Runtime requirements
+//!
+//! The Tokio runtime must have timers enabled (`enable_time()` or the `rt` feature
+//! with `#[tokio::main]`/`#[tokio::test]`). The backoff mechanism uses
+//! [`tokio::time::sleep`].
+//!
+//! # Example
+//!
+//! ```
+//! use tokio::sync::Mutex;
+//! use tokio_multi_lock::MultiLock2;
+//!
+//! # #[tokio::main(flavor = "current_thread")]
+//! # async fn main() {
+//! let mutex_a = Mutex::new(1u32);
+//! let mutex_b = Mutex::new(2u32);
+//!
+//! // Order of arguments doesn't matter - locks acquired in consistent order
+//! let (guard_a, guard_b) = MultiLock2::new(&mutex_a, &mutex_b).await;
+//! assert_eq!(*guard_a + *guard_b, 3);
+//! # }
+//! ```
+//!
+//! # Panics
+//!
+//! Panics if the same mutex is passed more than once.
+
 use std::{future::Future, pin::Pin, ptr, time::Duration};
 
 use tokio::sync::{Mutex, MutexGuard};
