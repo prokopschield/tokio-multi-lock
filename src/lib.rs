@@ -49,6 +49,10 @@ const MAX_TIMEOUT: Duration = Duration::from_millis(100);
 macro_rules! impl_multi_lock {
     ($name:ident, $n:expr => $([$idx:tt, $letter:ident, $lt:lifetime]),+ $(,)?) => {
         paste::paste! {
+            #[doc = concat!("Deadlock-resistant acquisition of ", stringify!($n), " mutexes.")]
+            ///
+            /// Returns guards in the same order as the mutexes passed to [`Self::new`].
+            /// Acquires locks in address order to prevent deadlock.
             pub struct $name<$($lt,)+ $($letter,)+>
             where
                 $($letter: Send + $lt,)+
@@ -72,6 +76,11 @@ macro_rules! impl_multi_lock {
             where
                 $($letter: Send + $lt,)+
             {
+                /// Creates a future that acquires all given mutexes.
+                ///
+                /// # Panics
+                ///
+                /// Panics if the same mutex is passed more than once.
                 #[allow(clippy::too_many_arguments)]
                 pub fn new($([<$letter:lower>]: &$lt Mutex<$letter>,)+) -> Self {
                     let mut addrs = [$(($idx, ptr::from_ref([<$letter:lower>]) as usize),)+];
