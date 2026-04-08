@@ -235,8 +235,13 @@ async fn bad_lock_scenario() {
         *lsr_g;
     });
 
-    polite_task.await.expect("should be Ok");
-    bad_task.await.expect("should be Ok");
+    let result = timeout(Duration::from_secs(20), async {
+        polite_task.await.expect("should be Ok");
+        bad_task.await.expect("should be Ok");
+    })
+    .await;
+
+    assert!(result.is_ok(), "Deadlock detected");
 }
 
 /// Multiple "bad" tasks acquiring locks in wrong order while `MultiLock` tasks compete.
