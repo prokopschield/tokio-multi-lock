@@ -1,6 +1,6 @@
 [package]
 name = "tokio-multilock"
-version = "0.1.0-3"
+version = "0.1.0-4"
 edition = "2024"
 description = "Deadlock-safe concurrent lock acquisition"
 readme = "README.md"
