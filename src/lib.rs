@@ -244,3 +244,153 @@ impl_multi_lock!(MultiLock23, 23 => [0, A, 'a], [1, B, 'b], [2, C, 'c], [3, D, '
 impl_multi_lock!(MultiLock24, 24 => [0, A, 'a], [1, B, 'b], [2, C, 'c], [3, D, 'd], [4, E, 'e], [5, F, 'f], [6, G, 'g], [7, H, 'h], [8, I, 'i], [9, J, 'j], [10, K, 'k], [11, L, 'l], [12, M, 'm], [13, N, 'n], [14, O, 'o], [15, P, 'p], [16, Q, 'q], [17, R, 'r], [18, S, 's], [19, T, 't], [20, U, 'u], [21, V, 'v], [22, W, 'w], [23, X, 'x]);
 impl_multi_lock!(MultiLock25, 25 => [0, A, 'a], [1, B, 'b], [2, C, 'c], [3, D, 'd], [4, E, 'e], [5, F, 'f], [6, G, 'g], [7, H, 'h], [8, I, 'i], [9, J, 'j], [10, K, 'k], [11, L, 'l], [12, M, 'm], [13, N, 'n], [14, O, 'o], [15, P, 'p], [16, Q, 'q], [17, R, 'r], [18, S, 's], [19, T, 't], [20, U, 'u], [21, V, 'v], [22, W, 'w], [23, X, 'x], [24, Y, 'y]);
 impl_multi_lock!(MultiLock26, 26 => [0, A, 'a], [1, B, 'b], [2, C, 'c], [3, D, 'd], [4, E, 'e], [5, F, 'f], [6, G, 'g], [7, H, 'h], [8, I, 'i], [9, J, 'j], [10, K, 'k], [11, L, 'l], [12, M, 'm], [13, N, 'n], [14, O, 'o], [15, P, 'p], [16, Q, 'q], [17, R, 'r], [18, S, 's], [19, T, 't], [20, U, 'u], [21, V, 'v], [22, W, 'w], [23, X, 'x], [24, Y, 'y], [25, Z, 'z]);
+
+/// Concurrently acquires multiple [`Mutex`](tokio::sync::Mutex) locks.
+///
+/// # Example
+///
+/// ```
+/// use tokio::sync::Mutex;
+/// use tokio_multi_lock::multilock;
+///
+/// # #[tokio::main(flavor = "current_thread")]
+/// # async fn main() {
+/// let mutex_a = Mutex::new(1u32);
+/// let mutex_b = Mutex::new(2u32);
+///
+/// let (guard_a, guard_b) = multilock!(mutex_a, mutex_b);
+/// assert_eq!(*guard_a + *guard_b, 3);
+/// # }
+/// ```
+#[macro_export]
+macro_rules! multilock {
+    ($a:expr) => {
+        $a.lock().await
+    };
+    ($a:expr, $b:expr) => {
+        $crate::MultiLock2::new(&$a, &$b).await
+    };
+    ($a:expr, $b:expr, $c:expr) => {
+        $crate::MultiLock3::new(&$a, &$b, &$c).await
+    };
+    ($a:expr, $b:expr, $c:expr, $d:expr) => {
+        $crate::MultiLock4::new(&$a, &$b, &$c, &$d).await
+    };
+    ($a:expr, $b:expr, $c:expr, $d:expr, $e:expr) => {
+        $crate::MultiLock5::new(&$a, &$b, &$c, &$d, &$e).await
+    };
+    ($a:expr, $b:expr, $c:expr, $d:expr, $e:expr, $f:expr) => {
+        $crate::MultiLock6::new(&$a, &$b, &$c, &$d, &$e, &$f).await
+    };
+    ($a:expr, $b:expr, $c:expr, $d:expr, $e:expr, $f:expr, $g:expr) => {
+        $crate::MultiLock7::new(&$a, &$b, &$c, &$d, &$e, &$f, &$g).await
+    };
+    ($a:expr, $b:expr, $c:expr, $d:expr, $e:expr, $f:expr, $g:expr, $h:expr) => {
+        $crate::MultiLock8::new(&$a, &$b, &$c, &$d, &$e, &$f, &$g, &$h).await
+    };
+    ($a:expr, $b:expr, $c:expr, $d:expr, $e:expr, $f:expr, $g:expr, $h:expr, $i:expr) => {
+        $crate::MultiLock9::new(&$a, &$b, &$c, &$d, &$e, &$f, &$g, &$h, &$i).await
+    };
+    ($a:expr, $b:expr, $c:expr, $d:expr, $e:expr, $f:expr, $g:expr, $h:expr, $i:expr, $j:expr) => {
+        $crate::MultiLock10::new(&$a, &$b, &$c, &$d, &$e, &$f, &$g, &$h, &$i, &$j).await
+    };
+    ($a:expr, $b:expr, $c:expr, $d:expr, $e:expr, $f:expr, $g:expr, $h:expr, $i:expr, $j:expr, $k:expr) => {
+        $crate::MultiLock11::new(&$a, &$b, &$c, &$d, &$e, &$f, &$g, &$h, &$i, &$j, &$k).await
+    };
+    ($a:expr, $b:expr, $c:expr, $d:expr, $e:expr, $f:expr, $g:expr, $h:expr, $i:expr, $j:expr, $k:expr, $l:expr) => {
+        $crate::MultiLock12::new(&$a, &$b, &$c, &$d, &$e, &$f, &$g, &$h, &$i, &$j, &$k, &$l).await
+    };
+    ($a:expr, $b:expr, $c:expr, $d:expr, $e:expr, $f:expr, $g:expr, $h:expr, $i:expr, $j:expr, $k:expr, $l:expr, $m:expr) => {
+        $crate::MultiLock13::new(
+            &$a, &$b, &$c, &$d, &$e, &$f, &$g, &$h, &$i, &$j, &$k, &$l, &$m,
+        )
+        .await
+    };
+    ($a:expr, $b:expr, $c:expr, $d:expr, $e:expr, $f:expr, $g:expr, $h:expr, $i:expr, $j:expr, $k:expr, $l:expr, $m:expr, $n:expr) => {
+        $crate::MultiLock14::new(
+            &$a, &$b, &$c, &$d, &$e, &$f, &$g, &$h, &$i, &$j, &$k, &$l, &$m, &$n,
+        )
+        .await
+    };
+    ($a:expr, $b:expr, $c:expr, $d:expr, $e:expr, $f:expr, $g:expr, $h:expr, $i:expr, $j:expr, $k:expr, $l:expr, $m:expr, $n:expr, $o:expr) => {
+        $crate::MultiLock15::new(
+            &$a, &$b, &$c, &$d, &$e, &$f, &$g, &$h, &$i, &$j, &$k, &$l, &$m, &$n, &$o,
+        )
+        .await
+    };
+    ($a:expr, $b:expr, $c:expr, $d:expr, $e:expr, $f:expr, $g:expr, $h:expr, $i:expr, $j:expr, $k:expr, $l:expr, $m:expr, $n:expr, $o:expr, $p:expr) => {
+        $crate::MultiLock16::new(
+            &$a, &$b, &$c, &$d, &$e, &$f, &$g, &$h, &$i, &$j, &$k, &$l, &$m, &$n, &$o, &$p,
+        )
+        .await
+    };
+    ($a:expr, $b:expr, $c:expr, $d:expr, $e:expr, $f:expr, $g:expr, $h:expr, $i:expr, $j:expr, $k:expr, $l:expr, $m:expr, $n:expr, $o:expr, $p:expr, $q:expr) => {
+        $crate::MultiLock17::new(
+            &$a, &$b, &$c, &$d, &$e, &$f, &$g, &$h, &$i, &$j, &$k, &$l, &$m, &$n, &$o, &$p, &$q,
+        )
+        .await
+    };
+    ($a:expr, $b:expr, $c:expr, $d:expr, $e:expr, $f:expr, $g:expr, $h:expr, $i:expr, $j:expr, $k:expr, $l:expr, $m:expr, $n:expr, $o:expr, $p:expr, $q:expr, $r:expr) => {
+        $crate::MultiLock18::new(
+            &$a, &$b, &$c, &$d, &$e, &$f, &$g, &$h, &$i, &$j, &$k, &$l, &$m, &$n, &$o, &$p, &$q,
+            &$r,
+        )
+        .await
+    };
+    ($a:expr, $b:expr, $c:expr, $d:expr, $e:expr, $f:expr, $g:expr, $h:expr, $i:expr, $j:expr, $k:expr, $l:expr, $m:expr, $n:expr, $o:expr, $p:expr, $q:expr, $r:expr, $s:expr) => {
+        $crate::MultiLock19::new(
+            &$a, &$b, &$c, &$d, &$e, &$f, &$g, &$h, &$i, &$j, &$k, &$l, &$m, &$n, &$o, &$p, &$q,
+            &$r, &$s,
+        )
+        .await
+    };
+    ($a:expr, $b:expr, $c:expr, $d:expr, $e:expr, $f:expr, $g:expr, $h:expr, $i:expr, $j:expr, $k:expr, $l:expr, $m:expr, $n:expr, $o:expr, $p:expr, $q:expr, $r:expr, $s:expr, $t:expr) => {
+        $crate::MultiLock20::new(
+            &$a, &$b, &$c, &$d, &$e, &$f, &$g, &$h, &$i, &$j, &$k, &$l, &$m, &$n, &$o, &$p, &$q,
+            &$r, &$s, &$t,
+        )
+        .await
+    };
+    ($a:expr, $b:expr, $c:expr, $d:expr, $e:expr, $f:expr, $g:expr, $h:expr, $i:expr, $j:expr, $k:expr, $l:expr, $m:expr, $n:expr, $o:expr, $p:expr, $q:expr, $r:expr, $s:expr, $t:expr, $u:expr) => {
+        $crate::MultiLock21::new(
+            &$a, &$b, &$c, &$d, &$e, &$f, &$g, &$h, &$i, &$j, &$k, &$l, &$m, &$n, &$o, &$p, &$q,
+            &$r, &$s, &$t, &$u,
+        )
+        .await
+    };
+    ($a:expr, $b:expr, $c:expr, $d:expr, $e:expr, $f:expr, $g:expr, $h:expr, $i:expr, $j:expr, $k:expr, $l:expr, $m:expr, $n:expr, $o:expr, $p:expr, $q:expr, $r:expr, $s:expr, $t:expr, $u:expr, $v:expr) => {
+        $crate::MultiLock22::new(
+            &$a, &$b, &$c, &$d, &$e, &$f, &$g, &$h, &$i, &$j, &$k, &$l, &$m, &$n, &$o, &$p, &$q,
+            &$r, &$s, &$t, &$u, &$v,
+        )
+        .await
+    };
+    ($a:expr, $b:expr, $c:expr, $d:expr, $e:expr, $f:expr, $g:expr, $h:expr, $i:expr, $j:expr, $k:expr, $l:expr, $m:expr, $n:expr, $o:expr, $p:expr, $q:expr, $r:expr, $s:expr, $t:expr, $u:expr, $v:expr, $w:expr) => {
+        $crate::MultiLock23::new(
+            &$a, &$b, &$c, &$d, &$e, &$f, &$g, &$h, &$i, &$j, &$k, &$l, &$m, &$n, &$o, &$p, &$q,
+            &$r, &$s, &$t, &$u, &$v, &$w,
+        )
+        .await
+    };
+    ($a:expr, $b:expr, $c:expr, $d:expr, $e:expr, $f:expr, $g:expr, $h:expr, $i:expr, $j:expr, $k:expr, $l:expr, $m:expr, $n:expr, $o:expr, $p:expr, $q:expr, $r:expr, $s:expr, $t:expr, $u:expr, $v:expr, $w:expr, $x:expr) => {
+        $crate::MultiLock24::new(
+            &$a, &$b, &$c, &$d, &$e, &$f, &$g, &$h, &$i, &$j, &$k, &$l, &$m, &$n, &$o, &$p, &$q,
+            &$r, &$s, &$t, &$u, &$v, &$w, &$x,
+        )
+        .await
+    };
+    ($a:expr, $b:expr, $c:expr, $d:expr, $e:expr, $f:expr, $g:expr, $h:expr, $i:expr, $j:expr, $k:expr, $l:expr, $m:expr, $n:expr, $o:expr, $p:expr, $q:expr, $r:expr, $s:expr, $t:expr, $u:expr, $v:expr, $w:expr, $x:expr, $y:expr) => {
+        $crate::MultiLock25::new(
+            &$a, &$b, &$c, &$d, &$e, &$f, &$g, &$h, &$i, &$j, &$k, &$l, &$m, &$n, &$o, &$p, &$q,
+            &$r, &$s, &$t, &$u, &$v, &$w, &$x, &$y,
+        )
+        .await
+    };
+    ($a:expr, $b:expr, $c:expr, $d:expr, $e:expr, $f:expr, $g:expr, $h:expr, $i:expr, $j:expr, $k:expr, $l:expr, $m:expr, $n:expr, $o:expr, $p:expr, $q:expr, $r:expr, $s:expr, $t:expr, $u:expr, $v:expr, $w:expr, $x:expr, $y:expr, $z:expr) => {
+        $crate::MultiLock26::new(
+            &$a, &$b, &$c, &$d, &$e, &$f, &$g, &$h, &$i, &$j, &$k, &$l, &$m, &$n, &$o, &$p, &$q,
+            &$r, &$s, &$t, &$u, &$v, &$w, &$x, &$y, &$z,
+        )
+        .await
+    };
+}
