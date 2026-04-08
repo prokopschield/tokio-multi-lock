@@ -21,7 +21,7 @@
 //!
 //! ```
 //! use tokio::sync::Mutex;
-//! use tokio_multi_lock::MultiLock2;
+//! use tokio_multilock::MultiLock2;
 //!
 //! # #[tokio::main(flavor = "current_thread")]
 //! # async fn main() {
@@ -46,7 +46,7 @@ use tokio::time::Sleep;
 const INITIAL_TIMEOUT: Duration = Duration::from_micros(100);
 const MAX_TIMEOUT: Duration = Duration::from_millis(100);
 
-macro_rules! impl_multi_lock {
+macro_rules! impl_multilock {
     ($name:ident, $n:expr => $([$idx:tt, $letter:ident, $lt:lifetime]),+ $(,)?) => {
         paste::paste! {
             #[doc = concat!("Deadlock-resistant acquisition of ", stringify!($n), " mutexes.")]
@@ -219,31 +219,31 @@ macro_rules! impl_multi_lock {
     };
 }
 
-impl_multi_lock!(MultiLock2, 2 => [0, A, 'a], [1, B, 'b]);
-impl_multi_lock!(MultiLock3, 3 => [0, A, 'a], [1, B, 'b], [2, C, 'c]);
-impl_multi_lock!(MultiLock4, 4 => [0, A, 'a], [1, B, 'b], [2, C, 'c], [3, D, 'd]);
-impl_multi_lock!(MultiLock5, 5 => [0, A, 'a], [1, B, 'b], [2, C, 'c], [3, D, 'd], [4, E, 'e]);
-impl_multi_lock!(MultiLock6, 6 => [0, A, 'a], [1, B, 'b], [2, C, 'c], [3, D, 'd], [4, E, 'e], [5, F, 'f]);
-impl_multi_lock!(MultiLock7, 7 => [0, A, 'a], [1, B, 'b], [2, C, 'c], [3, D, 'd], [4, E, 'e], [5, F, 'f], [6, G, 'g]);
-impl_multi_lock!(MultiLock8, 8 => [0, A, 'a], [1, B, 'b], [2, C, 'c], [3, D, 'd], [4, E, 'e], [5, F, 'f], [6, G, 'g], [7, H, 'h]);
-impl_multi_lock!(MultiLock9, 9 => [0, A, 'a], [1, B, 'b], [2, C, 'c], [3, D, 'd], [4, E, 'e], [5, F, 'f], [6, G, 'g], [7, H, 'h], [8, I, 'i]);
-impl_multi_lock!(MultiLock10, 10 => [0, A, 'a], [1, B, 'b], [2, C, 'c], [3, D, 'd], [4, E, 'e], [5, F, 'f], [6, G, 'g], [7, H, 'h], [8, I, 'i], [9, J, 'j]);
-impl_multi_lock!(MultiLock11, 11 => [0, A, 'a], [1, B, 'b], [2, C, 'c], [3, D, 'd], [4, E, 'e], [5, F, 'f], [6, G, 'g], [7, H, 'h], [8, I, 'i], [9, J, 'j], [10, K, 'k]);
-impl_multi_lock!(MultiLock12, 12 => [0, A, 'a], [1, B, 'b], [2, C, 'c], [3, D, 'd], [4, E, 'e], [5, F, 'f], [6, G, 'g], [7, H, 'h], [8, I, 'i], [9, J, 'j], [10, K, 'k], [11, L, 'l]);
-impl_multi_lock!(MultiLock13, 13 => [0, A, 'a], [1, B, 'b], [2, C, 'c], [3, D, 'd], [4, E, 'e], [5, F, 'f], [6, G, 'g], [7, H, 'h], [8, I, 'i], [9, J, 'j], [10, K, 'k], [11, L, 'l], [12, M, 'm]);
-impl_multi_lock!(MultiLock14, 14 => [0, A, 'a], [1, B, 'b], [2, C, 'c], [3, D, 'd], [4, E, 'e], [5, F, 'f], [6, G, 'g], [7, H, 'h], [8, I, 'i], [9, J, 'j], [10, K, 'k], [11, L, 'l], [12, M, 'm], [13, N, 'n]);
-impl_multi_lock!(MultiLock15, 15 => [0, A, 'a], [1, B, 'b], [2, C, 'c], [3, D, 'd], [4, E, 'e], [5, F, 'f], [6, G, 'g], [7, H, 'h], [8, I, 'i], [9, J, 'j], [10, K, 'k], [11, L, 'l], [12, M, 'm], [13, N, 'n], [14, O, 'o]);
-impl_multi_lock!(MultiLock16, 16 => [0, A, 'a], [1, B, 'b], [2, C, 'c], [3, D, 'd], [4, E, 'e], [5, F, 'f], [6, G, 'g], [7, H, 'h], [8, I, 'i], [9, J, 'j], [10, K, 'k], [11, L, 'l], [12, M, 'm], [13, N, 'n], [14, O, 'o], [15, P, 'p]);
-impl_multi_lock!(MultiLock17, 17 => [0, A, 'a], [1, B, 'b], [2, C, 'c], [3, D, 'd], [4, E, 'e], [5, F, 'f], [6, G, 'g], [7, H, 'h], [8, I, 'i], [9, J, 'j], [10, K, 'k], [11, L, 'l], [12, M, 'm], [13, N, 'n], [14, O, 'o], [15, P, 'p], [16, Q, 'q]);
-impl_multi_lock!(MultiLock18, 18 => [0, A, 'a], [1, B, 'b], [2, C, 'c], [3, D, 'd], [4, E, 'e], [5, F, 'f], [6, G, 'g], [7, H, 'h], [8, I, 'i], [9, J, 'j], [10, K, 'k], [11, L, 'l], [12, M, 'm], [13, N, 'n], [14, O, 'o], [15, P, 'p], [16, Q, 'q], [17, R, 'r]);
-impl_multi_lock!(MultiLock19, 19 => [0, A, 'a], [1, B, 'b], [2, C, 'c], [3, D, 'd], [4, E, 'e], [5, F, 'f], [6, G, 'g], [7, H, 'h], [8, I, 'i], [9, J, 'j], [10, K, 'k], [11, L, 'l], [12, M, 'm], [13, N, 'n], [14, O, 'o], [15, P, 'p], [16, Q, 'q], [17, R, 'r], [18, S, 's]);
-impl_multi_lock!(MultiLock20, 20 => [0, A, 'a], [1, B, 'b], [2, C, 'c], [3, D, 'd], [4, E, 'e], [5, F, 'f], [6, G, 'g], [7, H, 'h], [8, I, 'i], [9, J, 'j], [10, K, 'k], [11, L, 'l], [12, M, 'm], [13, N, 'n], [14, O, 'o], [15, P, 'p], [16, Q, 'q], [17, R, 'r], [18, S, 's], [19, T, 't]);
-impl_multi_lock!(MultiLock21, 21 => [0, A, 'a], [1, B, 'b], [2, C, 'c], [3, D, 'd], [4, E, 'e], [5, F, 'f], [6, G, 'g], [7, H, 'h], [8, I, 'i], [9, J, 'j], [10, K, 'k], [11, L, 'l], [12, M, 'm], [13, N, 'n], [14, O, 'o], [15, P, 'p], [16, Q, 'q], [17, R, 'r], [18, S, 's], [19, T, 't], [20, U, 'u]);
-impl_multi_lock!(MultiLock22, 22 => [0, A, 'a], [1, B, 'b], [2, C, 'c], [3, D, 'd], [4, E, 'e], [5, F, 'f], [6, G, 'g], [7, H, 'h], [8, I, 'i], [9, J, 'j], [10, K, 'k], [11, L, 'l], [12, M, 'm], [13, N, 'n], [14, O, 'o], [15, P, 'p], [16, Q, 'q], [17, R, 'r], [18, S, 's], [19, T, 't], [20, U, 'u], [21, V, 'v]);
-impl_multi_lock!(MultiLock23, 23 => [0, A, 'a], [1, B, 'b], [2, C, 'c], [3, D, 'd], [4, E, 'e], [5, F, 'f], [6, G, 'g], [7, H, 'h], [8, I, 'i], [9, J, 'j], [10, K, 'k], [11, L, 'l], [12, M, 'm], [13, N, 'n], [14, O, 'o], [15, P, 'p], [16, Q, 'q], [17, R, 'r], [18, S, 's], [19, T, 't], [20, U, 'u], [21, V, 'v], [22, W, 'w]);
-impl_multi_lock!(MultiLock24, 24 => [0, A, 'a], [1, B, 'b], [2, C, 'c], [3, D, 'd], [4, E, 'e], [5, F, 'f], [6, G, 'g], [7, H, 'h], [8, I, 'i], [9, J, 'j], [10, K, 'k], [11, L, 'l], [12, M, 'm], [13, N, 'n], [14, O, 'o], [15, P, 'p], [16, Q, 'q], [17, R, 'r], [18, S, 's], [19, T, 't], [20, U, 'u], [21, V, 'v], [22, W, 'w], [23, X, 'x]);
-impl_multi_lock!(MultiLock25, 25 => [0, A, 'a], [1, B, 'b], [2, C, 'c], [3, D, 'd], [4, E, 'e], [5, F, 'f], [6, G, 'g], [7, H, 'h], [8, I, 'i], [9, J, 'j], [10, K, 'k], [11, L, 'l], [12, M, 'm], [13, N, 'n], [14, O, 'o], [15, P, 'p], [16, Q, 'q], [17, R, 'r], [18, S, 's], [19, T, 't], [20, U, 'u], [21, V, 'v], [22, W, 'w], [23, X, 'x], [24, Y, 'y]);
-impl_multi_lock!(MultiLock26, 26 => [0, A, 'a], [1, B, 'b], [2, C, 'c], [3, D, 'd], [4, E, 'e], [5, F, 'f], [6, G, 'g], [7, H, 'h], [8, I, 'i], [9, J, 'j], [10, K, 'k], [11, L, 'l], [12, M, 'm], [13, N, 'n], [14, O, 'o], [15, P, 'p], [16, Q, 'q], [17, R, 'r], [18, S, 's], [19, T, 't], [20, U, 'u], [21, V, 'v], [22, W, 'w], [23, X, 'x], [24, Y, 'y], [25, Z, 'z]);
+impl_multilock!(MultiLock2, 2 => [0, A, 'a], [1, B, 'b]);
+impl_multilock!(MultiLock3, 3 => [0, A, 'a], [1, B, 'b], [2, C, 'c]);
+impl_multilock!(MultiLock4, 4 => [0, A, 'a], [1, B, 'b], [2, C, 'c], [3, D, 'd]);
+impl_multilock!(MultiLock5, 5 => [0, A, 'a], [1, B, 'b], [2, C, 'c], [3, D, 'd], [4, E, 'e]);
+impl_multilock!(MultiLock6, 6 => [0, A, 'a], [1, B, 'b], [2, C, 'c], [3, D, 'd], [4, E, 'e], [5, F, 'f]);
+impl_multilock!(MultiLock7, 7 => [0, A, 'a], [1, B, 'b], [2, C, 'c], [3, D, 'd], [4, E, 'e], [5, F, 'f], [6, G, 'g]);
+impl_multilock!(MultiLock8, 8 => [0, A, 'a], [1, B, 'b], [2, C, 'c], [3, D, 'd], [4, E, 'e], [5, F, 'f], [6, G, 'g], [7, H, 'h]);
+impl_multilock!(MultiLock9, 9 => [0, A, 'a], [1, B, 'b], [2, C, 'c], [3, D, 'd], [4, E, 'e], [5, F, 'f], [6, G, 'g], [7, H, 'h], [8, I, 'i]);
+impl_multilock!(MultiLock10, 10 => [0, A, 'a], [1, B, 'b], [2, C, 'c], [3, D, 'd], [4, E, 'e], [5, F, 'f], [6, G, 'g], [7, H, 'h], [8, I, 'i], [9, J, 'j]);
+impl_multilock!(MultiLock11, 11 => [0, A, 'a], [1, B, 'b], [2, C, 'c], [3, D, 'd], [4, E, 'e], [5, F, 'f], [6, G, 'g], [7, H, 'h], [8, I, 'i], [9, J, 'j], [10, K, 'k]);
+impl_multilock!(MultiLock12, 12 => [0, A, 'a], [1, B, 'b], [2, C, 'c], [3, D, 'd], [4, E, 'e], [5, F, 'f], [6, G, 'g], [7, H, 'h], [8, I, 'i], [9, J, 'j], [10, K, 'k], [11, L, 'l]);
+impl_multilock!(MultiLock13, 13 => [0, A, 'a], [1, B, 'b], [2, C, 'c], [3, D, 'd], [4, E, 'e], [5, F, 'f], [6, G, 'g], [7, H, 'h], [8, I, 'i], [9, J, 'j], [10, K, 'k], [11, L, 'l], [12, M, 'm]);
+impl_multilock!(MultiLock14, 14 => [0, A, 'a], [1, B, 'b], [2, C, 'c], [3, D, 'd], [4, E, 'e], [5, F, 'f], [6, G, 'g], [7, H, 'h], [8, I, 'i], [9, J, 'j], [10, K, 'k], [11, L, 'l], [12, M, 'm], [13, N, 'n]);
+impl_multilock!(MultiLock15, 15 => [0, A, 'a], [1, B, 'b], [2, C, 'c], [3, D, 'd], [4, E, 'e], [5, F, 'f], [6, G, 'g], [7, H, 'h], [8, I, 'i], [9, J, 'j], [10, K, 'k], [11, L, 'l], [12, M, 'm], [13, N, 'n], [14, O, 'o]);
+impl_multilock!(MultiLock16, 16 => [0, A, 'a], [1, B, 'b], [2, C, 'c], [3, D, 'd], [4, E, 'e], [5, F, 'f], [6, G, 'g], [7, H, 'h], [8, I, 'i], [9, J, 'j], [10, K, 'k], [11, L, 'l], [12, M, 'm], [13, N, 'n], [14, O, 'o], [15, P, 'p]);
+impl_multilock!(MultiLock17, 17 => [0, A, 'a], [1, B, 'b], [2, C, 'c], [3, D, 'd], [4, E, 'e], [5, F, 'f], [6, G, 'g], [7, H, 'h], [8, I, 'i], [9, J, 'j], [10, K, 'k], [11, L, 'l], [12, M, 'm], [13, N, 'n], [14, O, 'o], [15, P, 'p], [16, Q, 'q]);
+impl_multilock!(MultiLock18, 18 => [0, A, 'a], [1, B, 'b], [2, C, 'c], [3, D, 'd], [4, E, 'e], [5, F, 'f], [6, G, 'g], [7, H, 'h], [8, I, 'i], [9, J, 'j], [10, K, 'k], [11, L, 'l], [12, M, 'm], [13, N, 'n], [14, O, 'o], [15, P, 'p], [16, Q, 'q], [17, R, 'r]);
+impl_multilock!(MultiLock19, 19 => [0, A, 'a], [1, B, 'b], [2, C, 'c], [3, D, 'd], [4, E, 'e], [5, F, 'f], [6, G, 'g], [7, H, 'h], [8, I, 'i], [9, J, 'j], [10, K, 'k], [11, L, 'l], [12, M, 'm], [13, N, 'n], [14, O, 'o], [15, P, 'p], [16, Q, 'q], [17, R, 'r], [18, S, 's]);
+impl_multilock!(MultiLock20, 20 => [0, A, 'a], [1, B, 'b], [2, C, 'c], [3, D, 'd], [4, E, 'e], [5, F, 'f], [6, G, 'g], [7, H, 'h], [8, I, 'i], [9, J, 'j], [10, K, 'k], [11, L, 'l], [12, M, 'm], [13, N, 'n], [14, O, 'o], [15, P, 'p], [16, Q, 'q], [17, R, 'r], [18, S, 's], [19, T, 't]);
+impl_multilock!(MultiLock21, 21 => [0, A, 'a], [1, B, 'b], [2, C, 'c], [3, D, 'd], [4, E, 'e], [5, F, 'f], [6, G, 'g], [7, H, 'h], [8, I, 'i], [9, J, 'j], [10, K, 'k], [11, L, 'l], [12, M, 'm], [13, N, 'n], [14, O, 'o], [15, P, 'p], [16, Q, 'q], [17, R, 'r], [18, S, 's], [19, T, 't], [20, U, 'u]);
+impl_multilock!(MultiLock22, 22 => [0, A, 'a], [1, B, 'b], [2, C, 'c], [3, D, 'd], [4, E, 'e], [5, F, 'f], [6, G, 'g], [7, H, 'h], [8, I, 'i], [9, J, 'j], [10, K, 'k], [11, L, 'l], [12, M, 'm], [13, N, 'n], [14, O, 'o], [15, P, 'p], [16, Q, 'q], [17, R, 'r], [18, S, 's], [19, T, 't], [20, U, 'u], [21, V, 'v]);
+impl_multilock!(MultiLock23, 23 => [0, A, 'a], [1, B, 'b], [2, C, 'c], [3, D, 'd], [4, E, 'e], [5, F, 'f], [6, G, 'g], [7, H, 'h], [8, I, 'i], [9, J, 'j], [10, K, 'k], [11, L, 'l], [12, M, 'm], [13, N, 'n], [14, O, 'o], [15, P, 'p], [16, Q, 'q], [17, R, 'r], [18, S, 's], [19, T, 't], [20, U, 'u], [21, V, 'v], [22, W, 'w]);
+impl_multilock!(MultiLock24, 24 => [0, A, 'a], [1, B, 'b], [2, C, 'c], [3, D, 'd], [4, E, 'e], [5, F, 'f], [6, G, 'g], [7, H, 'h], [8, I, 'i], [9, J, 'j], [10, K, 'k], [11, L, 'l], [12, M, 'm], [13, N, 'n], [14, O, 'o], [15, P, 'p], [16, Q, 'q], [17, R, 'r], [18, S, 's], [19, T, 't], [20, U, 'u], [21, V, 'v], [22, W, 'w], [23, X, 'x]);
+impl_multilock!(MultiLock25, 25 => [0, A, 'a], [1, B, 'b], [2, C, 'c], [3, D, 'd], [4, E, 'e], [5, F, 'f], [6, G, 'g], [7, H, 'h], [8, I, 'i], [9, J, 'j], [10, K, 'k], [11, L, 'l], [12, M, 'm], [13, N, 'n], [14, O, 'o], [15, P, 'p], [16, Q, 'q], [17, R, 'r], [18, S, 's], [19, T, 't], [20, U, 'u], [21, V, 'v], [22, W, 'w], [23, X, 'x], [24, Y, 'y]);
+impl_multilock!(MultiLock26, 26 => [0, A, 'a], [1, B, 'b], [2, C, 'c], [3, D, 'd], [4, E, 'e], [5, F, 'f], [6, G, 'g], [7, H, 'h], [8, I, 'i], [9, J, 'j], [10, K, 'k], [11, L, 'l], [12, M, 'm], [13, N, 'n], [14, O, 'o], [15, P, 'p], [16, Q, 'q], [17, R, 'r], [18, S, 's], [19, T, 't], [20, U, 'u], [21, V, 'v], [22, W, 'w], [23, X, 'x], [24, Y, 'y], [25, Z, 'z]);
 
 /// Concurrently acquires multiple [`Mutex`](tokio::sync::Mutex) locks.
 ///
@@ -251,7 +251,7 @@ impl_multi_lock!(MultiLock26, 26 => [0, A, 'a], [1, B, 'b], [2, C, 'c], [3, D, '
 ///
 /// ```
 /// use tokio::sync::Mutex;
-/// use tokio_multi_lock::multilock;
+/// use tokio_multilock::multilock;
 ///
 /// # #[tokio::main(flavor = "current_thread")]
 /// # async fn main() {

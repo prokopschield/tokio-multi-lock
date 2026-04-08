@@ -1,7 +1,7 @@
 //! Tests for heterogeneous mutex types.
 
 use tokio::sync::Mutex;
-use tokio_multi_lock::{MultiLock2, MultiLock3, MultiLock4};
+use tokio_multilock::{MultiLock2, MultiLock3, MultiLock4};
 
 #[tokio::test]
 async fn different_primitive_types() {

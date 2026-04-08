@@ -12,7 +12,7 @@ When you need to lock two or more mutexes, the order matters. If task A locks mu
 
 ```rust
 use tokio::sync::Mutex;
-use tokio_multi_lock::MultiLock2;
+use tokio_multilock::MultiLock2;
 
 let wallet = Mutex::new(100u32);
 let bank = Mutex::new(1000u32);
@@ -33,7 +33,7 @@ Each mutex can hold a different type:
 
 ```rust
 use tokio::sync::Mutex;
-use tokio_multi_lock::MultiLock3;
+use tokio_multilock::MultiLock3;
 
 let count = Mutex::new(0u64);
 let log = Mutex::new(Vec::<String>::new());

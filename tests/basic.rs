@@ -1,7 +1,7 @@
 //! Basic functionality tests.
 
 use tokio::sync::Mutex;
-use tokio_multi_lock::{MultiLock2, MultiLock3, MultiLock4};
+use tokio_multilock::{MultiLock2, MultiLock3, MultiLock4};
 
 #[tokio::test]
 async fn acquire_two_locks() {

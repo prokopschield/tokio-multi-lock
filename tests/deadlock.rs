@@ -11,7 +11,7 @@ use std::{ptr, sync::Arc};
 
 use tokio::sync::Mutex;
 use tokio::time::{sleep, timeout};
-use tokio_multi_lock::{MultiLock2, MultiLock3};
+use tokio_multilock::{MultiLock2, MultiLock3};
 
 /// Two tasks acquiring two locks in opposite order.
 /// Would deadlock with naive lock acquisition.

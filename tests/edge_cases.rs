@@ -2,7 +2,7 @@
 
 use std::sync::Arc;
 use tokio::sync::Mutex;
-use tokio_multi_lock::{MultiLock2, MultiLock3};
+use tokio_multilock::{MultiLock2, MultiLock3};
 
 #[tokio::test]
 async fn zero_sized_types() {
